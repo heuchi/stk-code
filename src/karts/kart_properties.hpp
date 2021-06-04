@@ -74,9 +74,16 @@ private:
     /** The minimap icon file. */
     std::string              m_minimap_icon_file;
 
+    /** The frame for colored kart icons */
+    std::string             m_icon_frame_file;
+
     /** The texture to use in the minimap. If not defined, a simple
      *  color dot is used. */
     video::ITexture         *m_minimap_icon;
+
+    /** The texture to use for colored icons. If not defined we use
+     * a colored circle. */
+    video::ITexture         *m_icon_frame;
 
     /** The kart model and wheels. It is mutable since the wheels of the
      *  KartModel can rotate and turn, and animations are played, but otherwise
@@ -240,6 +247,10 @@ public:
     // ------------------------------------------------------------------------
     /** Returns the texture to use in the minimap, or NULL if not defined. */
     video::ITexture *getMinimapIcon  () const {return m_minimap_icon;         }
+
+    // ------------------------------------------------------------------------
+    /** Returns the texture to use for colored icon frames. */
+    video::ITexture *getIconFrame    () const {return m_icon_frame;           }
 
     // ------------------------------------------------------------------------
     KartModel* getKartModelCopy(std::shared_ptr<RenderInfo> ri=nullptr) const;

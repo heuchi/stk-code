@@ -75,6 +75,7 @@ KartProperties::KartProperties(const std::string &filename)
     m_ident         = "NONAME";
     m_icon_file     = "";
     m_shadow_file   = "";
+    m_icon_frame_file = "";
     m_shadow_scale    = 1.0f;
     m_shadow_x_offset = 0.0f;
     m_shadow_z_offset = 0.0f;
@@ -301,6 +302,15 @@ void KartProperties::load(const std::string &filename, const std::string &node)
     else
         m_minimap_icon = NULL;
 
+    if (m_icon_frame_file!="")
+    {
+        m_minimap_icon_file = GUIEngine::getSkin()->getThemedIcon(std::string("karts/")
+                                                                    +m_ident+"/"+m_icon_frame_file);
+        m_icon_frame = STKTexManager::getInstance()->getTexture(m_minimap_icon_file);
+    }
+    else
+        m_icon_frame = NULL;
+
     // Only load the model if the .kart file has the appropriate version,
     // otherwise warnings are printed.
     if (m_version >= 1)
@@ -417,6 +427,8 @@ void KartProperties::getAllData(const XMLNode * root)
     root->get("icon-file",         &m_icon_file        );
 
     root->get("minimap-icon-file", &m_minimap_icon_file);
+
+    root->get("icon-frame-file",   &m_icon_frame_file);
 
     root->get("shadow-file",       &m_shadow_file      );
     Vec3 c;

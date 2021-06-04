@@ -1109,15 +1109,29 @@ void RaceGUIBase::drawPlayerIcon(AbstractKart *kart, int x, int y, int w,
     else if (kart_hue > 0.0 && (minor_mode == RaceManager::MINOR_MODE_NORMAL_RACE
             || minor_mode == RaceManager::MINOR_MODE_TIME_TRIAL))
     {
-        // when in normal mode or time trial draw kart color circles for karts with custom color
-        // draw a little bigger in case an addon kart uses the full icon size
-        const core::rect<s32> color_pos(x-5, y-2, x+w+3, y+w+6);
-        const video::SColor colors[4] = {kart_color, kart_color, kart_color, kart_color};
-        const core::rect<s32> rect(core::position2d<s32>(0,0),
-                                   m_icons_kart_color->getSize());
-        kart_color.setAlpha(140);
-        draw2DImage(m_icons_kart_color, color_pos, rect, NULL, colors, true);
-        showing_kart_colors = true;
+        video::ITexture *kart_icon_frame = kart->getKartProperties()->getIconFrame();
+        if (kart_icon_frame)
+        {
+            // nice, we have a frame icon for this kart
+            const core::rect<s32> rect(core::position2d<s32>(0,0),
+                                    kart_icon_frame->getSize());
+            kart_color.setAlpha(200);
+            const video::SColor colors[4] = {kart_color, kart_color, kart_color, kart_color};
+            draw2DImage(kart_icon_frame, pos, rect, NULL, colors, true);
+        }
+        else
+        {
+            // we don't have a frame icon, so use fallback circle
+            // when in normal mode or time trial draw kart color circles for karts with custom color
+            // draw a little bigger in case an addon kart uses the full icon size
+            const core::rect<s32> color_pos(x-5, y-2, x+w+3, y+w+6);
+            const video::SColor colors[4] = {kart_color, kart_color, kart_color, kart_color};
+            const core::rect<s32> rect(core::position2d<s32>(0,0),
+                                    m_icons_kart_color->getSize());
+            kart_color.setAlpha(140);
+            draw2DImage(m_icons_kart_color, color_pos, rect, NULL, colors, true);
+            showing_kart_colors = true;
+        }
     }
 
     // Fixes crash bug, why are certain icons not showing up?
