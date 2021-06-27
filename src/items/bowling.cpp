@@ -25,6 +25,8 @@
 #include "io/xml_node.hpp"
 #include "karts/abstract_kart.hpp"
 #include "modes/linear_world.hpp"
+#include "karts/controller/controller.hpp"
+#include "utils/string_utils.hpp"
 
 #include "utils/log.hpp" //TODO: remove after debugging is done
 
@@ -157,6 +159,16 @@ bool Bowling::hit(AbstractKart* kart, PhysicalObject* obj)
     bool was_real_hit = Flyable::hit(kart, obj);
     if(was_real_hit)
     {
+        if (kart && (int)m_ticks_since_thrown < stk_config->time2Ticks(1.5f))
+            // hit by bowling only counts if bowl wasn't fired too long ago
+            // because in that case it might have been avoided
+        {
+            kart->bowlHitBy(getOwnerId());
+            //std::string msg;
+            //msg += StringUtils::wideToUtf8(kart->getController()->getName());
+            //msg += " hit by bowl from " + StringUtils::wideToUtf8(getOwner()->getController()->getName());
+            //Log::info("BowlHit", msg.c_str());
+        }
         if(kart && kart->isShielded())
         {
             kart->decreaseShieldTime();

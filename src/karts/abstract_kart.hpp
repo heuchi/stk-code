@@ -78,6 +78,10 @@ private:
     /** Name of the kart with translation. */
     core::stringw m_name;
 
+    /** store ids of players who hit this kart. */
+    std::vector<unsigned int> m_cake_hits;
+    std::vector<unsigned int> m_bowl_hits;
+
     // ------------------------------------------------------------------------
     void loadKartProperties(const std::string& new_ident,
                             HandicapLevel handicap,
@@ -548,6 +552,13 @@ public:
     /** Return the confirmed finish ticks (sent by the server)
      *  indicating that this kart has really finished the race. */
     virtual int getNetworkConfirmedFinishTicks() const = 0;
+
+    void cakeHitBy(unsigned int player) { if (!hasFinishedRace()) m_cake_hits.push_back(player); }
+    void bowlHitBy(unsigned int player) { if (!hasFinishedRace()) m_bowl_hits.push_back(player); }
+    int  cakeHitsTaken() const          { return m_cake_hits.size(); }
+    int  bowlHitsTaken() const          { return m_bowl_hits.size(); }
+    int  cakeHitsByPlayer(unsigned int player) const;
+    int  bowlHitsByPlayer(unsigned int player) const;
 };   // AbstractKart
 
 

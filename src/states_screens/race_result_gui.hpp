@@ -111,6 +111,11 @@ private:
         float            m_kart_color;
         /** Number of laps that kart finished */
         unsigned int     m_laps;
+
+        /** number of hits taken */
+        int              m_caked;
+        int              m_bowled;
+
     };   // Rowinfo
 
     /** The team icons. */

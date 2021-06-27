@@ -46,6 +46,8 @@ AbstractKart::AbstractKart(const std::string& ident,
              : Moveable()
 {
     m_world_kart_id   = world_kart_id;
+    m_cake_hits.clear();
+    m_bowl_hits.clear();
     loadKartProperties(ident, handicap, ri);
 }   // AbstractKart
 
@@ -243,3 +245,21 @@ void AbstractKart::makeKartRest()
     body->proceedToTransform(t);
     setTrans(t);
 }   // makeKartRest
+
+int AbstractKart::cakeHitsByPlayer(unsigned int player) const
+{
+    int hits = 0;
+    for (unsigned int i = 0; i < m_cake_hits.size(); i++)
+        if (m_cake_hits[i] == player)
+            hits++;
+    return hits;
+}
+
+int AbstractKart::bowlHitsByPlayer(unsigned int player) const
+{
+    int hits = 0;
+    for (unsigned int i = 0; i < m_bowl_hits.size(); i++)
+        if (m_bowl_hits[i] == player)
+            hits++;
+    return hits;
+}

@@ -842,6 +842,9 @@ void RaceResultGUI::unload()
         bool active_gp = (RaceManager::get()->getMajorMode() == RaceManager::MAJOR_MODE_GRAND_PRIX);
 
         auto cl = LobbyProtocol::get<ClientLobby>();
+
+        std::vector<std::pair<int,std::string>> playerHits;
+
         for (unsigned int position = first_position;
         position <= RaceManager::get()->getNumberOfKarts() - sta; position++)
         {
@@ -868,6 +871,8 @@ void RaceResultGUI::unload()
                 kart->getKartProperties()->getIconMaterial()->getTexture();
             ri->m_kart_icon = icon;
             ri->m_kart_color = RaceManager::get()->getKartColor(kart->getWorldKartId());
+            ri->m_caked = kart->cakeHitsTaken();
+            ri->m_bowled = kart->bowlHitsTaken();
 
             // FTL karts will get a time assigned, they are not shown as eliminated
             if (kart->isEliminated() && RaceManager::get()->getMinorMode() == RaceManager::MINOR_MODE_3_STRIKES)
@@ -916,7 +921,43 @@ void RaceResultGUI::unload()
                 m_font->getDimension(ri->m_kart_name.c_str());
             if (rect.Width > m_width_kart_name)
                 m_width_kart_name = rect.Width;
+
+            // statistic for hits for local player
+            // for now here
+            std::vector<std::pair<int,core::stringw>> hitsTaken;
+            for (unsigned int source = first_position;
+                source <= RaceManager::get()->getNumberOfKarts() - sta; source++)
+            {
+                const AbstractKart *src_kart = rank_world->getKartAtPosition(source);
+                const int src_id = src_kart->getWorldKartId();
+
+                if (ffa && kart->isEliminated())
+                    continue;
+
+                int hits = kart->cakeHitsByPlayer(src_id);
+                hits += kart->bowlHitsByPlayer(src_id);
+                if(hits > 0)
+                    hitsTaken.push_back(std::pair<int,core::stringw>(hits,src_kart->getController()->getName()));
+            }
+            std::sort(hitsTaken.begin(),hitsTaken.end(),
+                [](std::pair<int,core::stringw> &a, std::pair<int,core::stringw> &b) {return a.first > b.first; });
+
+            std::string msg = StringUtils::wideToUtf8(ri->m_kart_name) + ": ";
+            for (unsigned int i=0; i< hitsTaken.size(); i++)
+            {
+                msg += std::to_string(hitsTaken[i].first) + "x by " + StringUtils::wideToUtf8(hitsTaken[i].second).substr(0,8);
+                if (i < hitsTaken.size() - 1) msg += ",  ";
+            }
+            if (hitsTaken.size() > 0)
+                playerHits.push_back(std::pair<int,std::string>(ri->m_caked+ri->m_bowled,msg));
         }   // for position
+
+        std::sort(playerHits.begin(), playerHits.end(),
+            [](std::pair<int,std::string> &a, std::pair<int,std::string> &b) { return a.first > b.first; });
+        for (unsigned int i=0; i < playerHits.size(); i++)
+        {
+            Log::info("Hits",playerHits[i].second.c_str());
+        }
 
         std::string max_time = StringUtils::timeToString(max_finish_time, time_precision, true, /*display hours*/ active_gp);
         core::stringw string_max_time(max_time.c_str());
@@ -1385,6 +1426,11 @@ void RaceResultGUI::unload()
             ? video::SColor(255, 255, 0, 0)
             : video::SColor(255, 255, 255, 255);
 
+        irr::video::ITexture* cake_icon = irr_driver->getTexture(FileManager::GUI_ICON,
+            "cake-icon.png");
+        irr::video::ITexture* bowl_icon = irr_driver->getTexture(FileManager::GUI_ICON,
+            "bowling-icon.png");
+
         unsigned int current_x = x;
 
         // Draw rank order
@@ -1461,6 +1507,31 @@ void RaceResultGUI::unload()
         
 
         current_x += 100 + m_width_column_space;
+
+        if (ri->m_caked > 0)
+        {
+            // draw cake item
+            core::recti cake_rect(core::vector2di(0, 0), cake_icon->getSize());
+            int pad = m_width_icon / 5;
+            core::recti pos_cake(current_x + pad, y + pad, current_x + m_width_icon - pad, y + m_width_icon - pad);
+            draw2DImage(cake_icon, pos_cake, cake_rect, NULL, NULL, true);
+            // draw number of hits
+            core::recti pos_cakeHits(current_x + m_width_icon, y, current_x + m_width_icon + m_width_all_points, y + m_distance_between_rows);
+            m_font->draw(StringUtils::utf8ToWide(std::to_string(ri->m_caked).c_str()), pos_cakeHits, color, false, false, NULL, true);
+        }
+        current_x += m_width_icon + m_width_all_points;
+        if (ri->m_bowled > 0)
+        {
+            // draw bowl item
+            core::recti bowl_rect(core::vector2di(0, 0), bowl_icon->getSize());
+            int pad = m_width_icon / 5;
+            core::recti pos_bowl(current_x + pad, y + pad, current_x + m_width_icon - pad, y + m_width_icon - pad);
+            draw2DImage(bowl_icon, pos_bowl, bowl_rect, NULL, NULL, true);
+            // draw number of hits
+            core::recti pos_bowlHits(current_x + m_width_icon, y, current_x + m_width_icon + m_width_all_points, y + m_distance_between_rows);
+            m_font->draw(StringUtils::utf8ToWide(std::to_string(ri->m_bowled).c_str()), pos_bowlHits, color, false, false, NULL, true);
+        }
+        current_x += m_width_icon + m_width_all_points;
 
         // Only display points in GP mode and when the GP results are displayed.
         // =====================================================================
