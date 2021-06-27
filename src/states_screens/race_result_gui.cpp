@@ -873,6 +873,7 @@ void RaceResultGUI::unload()
             ri->m_kart_color = RaceManager::get()->getKartColor(kart->getWorldKartId());
             ri->m_caked = kart->cakeHitsTaken();
             ri->m_bowled = kart->bowlHitsTaken();
+            ri->m_basketballed = kart->basketballHitsTaken();
 
             // FTL karts will get a time assigned, they are not shown as eliminated
             if (kart->isEliminated() && RaceManager::get()->getMinorMode() == RaceManager::MINOR_MODE_3_STRIKES)
@@ -1430,6 +1431,8 @@ void RaceResultGUI::unload()
             "cake-icon.png");
         irr::video::ITexture* bowl_icon = irr_driver->getTexture(FileManager::GUI_ICON,
             "bowling-icon.png");
+        irr::video::ITexture* basketball_icon = irr_driver->getTexture(FileManager::GUI_ICON,
+            "rubber_ball-icon.png");
 
         unsigned int current_x = x;
 
@@ -1508,30 +1511,43 @@ void RaceResultGUI::unload()
 
         current_x += 100 + m_width_column_space;
 
+        int number_width = m_width_all_points * 2 / 3;
         if (ri->m_caked > 0)
         {
-            // draw cake item
+            // draw cake icon
             core::recti cake_rect(core::vector2di(0, 0), cake_icon->getSize());
             int pad = m_width_icon / 5;
             core::recti pos_cake(current_x + pad, y + pad, current_x + m_width_icon - pad, y + m_width_icon - pad);
             draw2DImage(cake_icon, pos_cake, cake_rect, NULL, NULL, true);
             // draw number of hits
-            core::recti pos_cakeHits(current_x + m_width_icon, y, current_x + m_width_icon + m_width_all_points, y + m_distance_between_rows);
+            core::recti pos_cakeHits(current_x + m_width_icon, y, current_x + m_width_icon + number_width, y + m_distance_between_rows);
             m_font->draw(StringUtils::utf8ToWide(std::to_string(ri->m_caked).c_str()), pos_cakeHits, color, false, false, NULL, true);
         }
-        current_x += m_width_icon + m_width_all_points;
+        current_x += m_width_icon + number_width;
         if (ri->m_bowled > 0)
         {
-            // draw bowl item
+            // draw bowl icon
             core::recti bowl_rect(core::vector2di(0, 0), bowl_icon->getSize());
             int pad = m_width_icon / 5;
             core::recti pos_bowl(current_x + pad, y + pad, current_x + m_width_icon - pad, y + m_width_icon - pad);
             draw2DImage(bowl_icon, pos_bowl, bowl_rect, NULL, NULL, true);
             // draw number of hits
-            core::recti pos_bowlHits(current_x + m_width_icon, y, current_x + m_width_icon + m_width_all_points, y + m_distance_between_rows);
+            core::recti pos_bowlHits(current_x + m_width_icon, y, current_x + m_width_icon + number_width, y + m_distance_between_rows);
             m_font->draw(StringUtils::utf8ToWide(std::to_string(ri->m_bowled).c_str()), pos_bowlHits, color, false, false, NULL, true);
         }
-        current_x += m_width_icon + m_width_all_points;
+        current_x += m_width_icon + number_width;
+        if (ri->m_basketballed > 0)
+        {
+            // draw basketball icon
+            core::recti ball_rect(core::vector2di(0, 0), basketball_icon->getSize());
+            int pad = m_width_icon / 5;
+            core::recti pos_ball(current_x + pad, y + pad, current_x + m_width_icon - pad, y + m_width_icon - pad);
+            draw2DImage(basketball_icon, pos_ball, ball_rect, NULL, NULL, true);
+            // draw number of hits
+            core::recti pos_ballHits(current_x + m_width_icon, y, current_x + m_width_icon + number_width, y + m_distance_between_rows);
+            m_font->draw(StringUtils::utf8ToWide(std::to_string(ri->m_basketballed).c_str()), pos_ballHits, color, false, false, NULL, true);
+        }
+        current_x += m_width_icon + number_width;
 
         // Only display points in GP mode and when the GP results are displayed.
         // =====================================================================

@@ -48,6 +48,7 @@ AbstractKart::AbstractKart(const std::string& ident,
     m_world_kart_id   = world_kart_id;
     m_cake_hits.clear();
     m_bowl_hits.clear();
+    m_basketball_hits.clear();
     loadKartProperties(ident, handicap, ri);
 }   // AbstractKart
 
@@ -74,6 +75,9 @@ void AbstractKart::reset()
         delete m_kart_animation;
         m_kart_animation = NULL;
     }
+    m_cake_hits.clear();
+    m_bowl_hits.clear();
+    m_basketball_hits.clear();
     Moveable::reset();
 }   // reset
 

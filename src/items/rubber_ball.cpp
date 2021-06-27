@@ -865,6 +865,14 @@ bool RubberBall::hit(AbstractKart* kart, PhysicalObject* object)
     bool was_real_hit = Flyable::hit(kart, object);
     if(was_real_hit)
     {
+        if (kart && !kart->getKartAnimation())
+        {
+            kart->basketballHitBy(getOwnerId());
+            //std::string msg;
+            //msg += StringUtils::wideToUtf8(kart->getController()->getName());
+            //msg += " hit by basketball from " + StringUtils::wideToUtf8(getOwner()->getController()->getName());
+            //Log::info("CakeHit", msg.c_str());
+        }
         if(kart && kart->isShielded())
         {
             kart->decreaseShieldTime();

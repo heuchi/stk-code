@@ -115,6 +115,7 @@ private:
         /** number of hits taken */
         int              m_caked;
         int              m_bowled;
+        int              m_basketballed;
 
     };   // Rowinfo
 
