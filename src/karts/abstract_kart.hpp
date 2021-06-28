@@ -79,6 +79,8 @@ private:
     core::stringw m_name;
 
     /** store ids of players who hit this kart. */
+    int m_ticks_last_hit;
+    int m_min_ticks_between_hits;
     std::vector<unsigned int> m_cake_hits;
     std::vector<unsigned int> m_bowl_hits;
     std::vector<unsigned int> m_basketball_hits;
@@ -554,9 +556,9 @@ public:
      *  indicating that this kart has really finished the race. */
     virtual int getNetworkConfirmedFinishTicks() const = 0;
 
-    void cakeHitBy(unsigned int player)        { if (!hasFinishedRace()) m_cake_hits.push_back(player); }
-    void bowlHitBy(unsigned int player)        { if (!hasFinishedRace()) m_bowl_hits.push_back(player); }
-    void basketballHitBy(unsigned int player)  { if (!hasFinishedRace()) m_basketball_hits.push_back(player); }
+    void cakeHitBy(unsigned int player);
+    void bowlHitBy(unsigned int player);
+    void basketballHitBy(unsigned int player);
     int  cakeHitsTaken() const          { return m_cake_hits.size(); }
     int  bowlHitsTaken() const          { return m_bowl_hits.size(); }
     int  basketballHitsTaken() const    { return m_basketball_hits.size(); }

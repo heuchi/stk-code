@@ -32,6 +32,8 @@
 #include "utils/log.hpp"
 #include "utils/string_utils.hpp"
 
+#include "modes/linear_world.hpp"
+
 /** Creates a kart.
  *  \param ident The identifier of the kart.
  *  \param world_kart_id  The world index of this kart.
@@ -46,6 +48,8 @@ AbstractKart::AbstractKart(const std::string& ident,
              : Moveable()
 {
     m_world_kart_id   = world_kart_id;
+    m_min_ticks_between_hits = stk_config->time2Ticks(0.8f);
+    m_ticks_last_hit = 0;
     m_cake_hits.clear();
     m_bowl_hits.clear();
     m_basketball_hits.clear();
@@ -75,6 +79,7 @@ void AbstractKart::reset()
         delete m_kart_animation;
         m_kart_animation = NULL;
     }
+    m_ticks_last_hit = 0;
     m_cake_hits.clear();
     m_bowl_hits.clear();
     m_basketball_hits.clear();
@@ -249,6 +254,39 @@ void AbstractKart::makeKartRest()
     body->proceedToTransform(t);
     setTrans(t);
 }   // makeKartRest
+
+void AbstractKart::cakeHitBy(unsigned int player)
+{
+    int ticks = World::getWorld()->getTicksSinceStart();
+    if (ticks - m_ticks_last_hit < m_min_ticks_between_hits) return;
+    if (!hasFinishedRace())
+    {
+        m_cake_hits.push_back(player);
+        m_ticks_last_hit = ticks;
+    }
+}
+
+void AbstractKart::bowlHitBy(unsigned int player)
+{
+    int ticks = World::getWorld()->getTicksSinceStart();
+    if (ticks - m_ticks_last_hit < m_min_ticks_between_hits) return;
+    if (!hasFinishedRace())
+    {
+        m_bowl_hits.push_back(player);
+        m_ticks_last_hit = ticks;
+    }
+}
+
+void AbstractKart::basketballHitBy(unsigned int player)
+{
+    int ticks = World::getWorld()->getTicksSinceStart();
+    if (ticks - m_ticks_last_hit < m_min_ticks_between_hits) return;
+    if (!hasFinishedRace())
+    {
+        m_basketball_hits.push_back(player);
+        m_ticks_last_hit = ticks;
+    }
+}
 
 int AbstractKart::cakeHitsByPlayer(unsigned int player) const
 {
