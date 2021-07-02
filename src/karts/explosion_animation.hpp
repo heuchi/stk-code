@@ -75,7 +75,7 @@ friend class KartRewinder;
 public:
     // ------------------------------------------------------------------------
     static ExplosionAnimation *create(AbstractKart* kart, const Vec3 &pos,
-                                      bool direct_hit);
+                                      bool direct_hit, bool is_cake_hit = false, unsigned int cake_hit_by = 0);
     // ------------------------------------------------------------------------
     static ExplosionAnimation *create(AbstractKart *kart);
     // ------------------------------------------------------------------------

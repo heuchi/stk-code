@@ -1363,6 +1363,9 @@ void RaceResultGUI::unload()
                 }
             }
             ri->m_kart_color = RaceManager::get()->getKartColor(kart_id);
+            ri->m_caked = kart->cakeHitsTaken();
+            ri->m_bowled = kart->bowlHitsTaken();
+            ri->m_basketballed = kart->basketballHitsTaken();
             // In FTL karts do have a time, which is shown even when the kart
             // is eliminated
             if (kart->isEliminated() && !(RaceManager::get()->isFollowMode()))

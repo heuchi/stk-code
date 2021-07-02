@@ -66,17 +66,10 @@ bool Cake::hit(AbstractKart* kart, PhysicalObject* obj)
     bool was_real_hit = Flyable::hit(kart, obj);
     if(was_real_hit)
     {
-        if (kart)
-        {
-            kart->cakeHitBy(getOwnerId());
-            //std::string msg;
-            //msg += StringUtils::wideToUtf8(kart->getController()->getName());
-            //msg += " hit by cake from " + StringUtils::wideToUtf8(getOwner()->getController()->getName());
-            //Log::info("CakeHit", msg.c_str());
-        }
         if(kart && kart->isShielded())
         {
             kart->decreaseShieldTime();
+            if (kart) kart->cakeHitBy(getOwnerId());
             return false; //Not sure if a shield hit is a real hit.
         }
         explode(kart, obj);

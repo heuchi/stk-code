@@ -599,7 +599,7 @@ void Flyable::explode(AbstractKart *kart_hit, PhysicalObject *object,
         {
             // The explosion animation will register itself with the kart
             // and will free it later.
-            ExplosionAnimation::create(kart, getXYZ(), kart==kart_hit);
+            ExplosionAnimation::create(kart, getXYZ(), kart==kart_hit, secondary_hits, getOwnerId());
             if (kart == kart_hit)
             {
                 world->kartHit(kart->getWorldKartId(),

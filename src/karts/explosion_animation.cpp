@@ -43,7 +43,9 @@
  */
 ExplosionAnimation *ExplosionAnimation::create(AbstractKart *kart,
                                                const Vec3 &pos,
-                                               bool direct_hit)
+                                               bool direct_hit,
+                                               bool is_cake_hit,
+                                               unsigned int cake_hit_by)
 {
     // When goal phase is happening karts is made stationary, so no animation
     // will be created
@@ -68,6 +70,8 @@ ExplosionAnimation *ExplosionAnimation::create(AbstractKart *kart,
         if(ftl_world->isLeader(kart->getWorldKartId()))
             ftl_world->leaderHit();
     }
+
+    if (is_cake_hit) kart->cakeHitBy(cake_hit_by);
 
     return new ExplosionAnimation(kart, direct_hit);
 }   // create
