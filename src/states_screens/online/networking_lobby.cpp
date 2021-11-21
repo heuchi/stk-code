@@ -333,6 +333,8 @@ handle_player_message_copy:
         return false;
     });
 #endif
+    m_back_widget->setActive(false);
+    m_back_widget->setVisible(false);
 }   // init
 
 // ----------------------------------------------------------------------------
@@ -783,7 +785,7 @@ void NetworkingLobby::eventCallback(Widget* widget, const std::string& name,
 {
     if (name == m_back_widget->m_properties[PROP_ID])
     {
-        StateManager::get()->escapePressed();
+        //StateManager::get()->escapePressed();
         return;
     }
     else if (name == m_player_list->m_properties[GUIEngine::PROP_ID])
