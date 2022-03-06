@@ -393,12 +393,31 @@ void Powerup::use()
     case PowerupManager::POWERUP_ANVIL:
         //Attach an anvil(twice as good as the one given
         //by the bananas) to the kart in the 1st position.
-        for(unsigned int i = 0 ; i < world->getNumKarts(); ++i)
         {
-            AbstractKart *kart=world->getKart(i);
-            if(kart->isEliminated() || kart->isInvulnerable()) continue;
-            if(kart == m_kart) continue;
-            if(kart->getPosition() == 1)
+            AbstractKart *kart=nullptr;
+            const int ownPosition = m_kart->getPosition();
+
+            for(unsigned int i = 0; i < world->getNumKarts(); ++i)
+            {
+                AbstractKart *candidate = world->getKart(i);
+                if(candidate == m_kart) continue;
+                if(candidate->isEliminated() || candidate->hasFinishedRace()) continue;
+                if(candidate->getPosition() > ownPosition) continue;
+                // to only hit leading kart and not pass on anchor if the leader is invulnerable
+                // or already has an anvil, comment out following 2 lines
+                if(candidate->isInvulnerable()) continue;
+                if(candidate->getAttachment()->getType() == Attachment::ATTACH_ANVIL) continue;
+
+                if(!kart || candidate->getPosition() < kart->getPosition())
+                {
+                    kart = candidate;
+                    if(kart->getPosition() == 1) // won't get better
+                        break;
+                }
+            }
+
+            // uncomment second condition to only hit leader and not pass on anchor (see above)
+            if(kart /* && !kart->isInvulnerable() */)
             {
                 kart->getAttachment()->set(Attachment::ATTACH_ANVIL,
                                            stk_config->
@@ -418,10 +437,8 @@ void Powerup::use()
 
                     m_sound_use->play();
                 }
-                break;
             }
         }
-
         break;
 
     case PowerupManager::POWERUP_PARACHUTE:
